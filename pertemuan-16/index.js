@@ -1,23 +1,23 @@
-//Asyncronus JS
+// Asynchronous JS
 
-//Syncronus -> single thread -> blocking
+// Synchronous -> single thread -> blocking
 console.log("Proses 1");
 console.log("Proses 2");
-console.log("Proses 3");
+console.log("Proses yg memakan waktu lama");
 console.log("Proses 4");
 
-//Asyncronus -> multiple thread -> non-blocking
-//1. Parallel
+// Asynchronous -> multi thread -> non blocking
+// 1. Parallel
 setTimeout(() => {
   console.log("Proses 1");
-}, 3000);
+}, 5000);
 console.log("Proses 2");
 setTimeout(() => {
   console.log("Proses 3");
 }, 3000);
 console.log("Proses 4");
 
-// Concurrent
+// 2. Concurrent
 setTimeout(() => {
   console.log("Proses 1");
   setTimeout(() => {
@@ -26,32 +26,61 @@ setTimeout(() => {
       console.log("Proses 3");
       setTimeout(() => {
         console.log("Proses 4");
-      }, 3000); // Menunggu 3 detik untuk Proses 4
-    }, 3000); // Menunggu 2 detik untuk Proses 3
-  }, 3000); // Menunggu 1 detik untuk Proses 2
-}, 3000); // Menunggu 0.5 detik untuk Proses 1
+      }, 3000);
+    }, 3000);
+  }, 3000);
+}, 3000);
 
-//Promise
-//Buat Promise sederhana4
-//1. Then - Catch
+// Promise
+// Buat promise sederhana
+let condition = false;
+const newPromise = new Promise((resolve, reject) => {
+  if (condition) {
+    resolve("Berhasil");
+  } else {
+    reject("Gagal");
+  }
+});
 
-// Pakai Promises yang sudah ada
-//1. fetch
-fetch("https://jsonplaceholder.typicode.com/users/1")
+// Pakai Promise
+// 1. then - catch
+newPromise
+  .then((result) => result)
+  .then((result2) => console.log(result2))
+  .catch((error) => console.log(error));
+
+// 2.Async - await
+// Harus dibuat dalam fungsi
+const consumePromise = async () => {
+  try {
+    let result = await newPromise;
+    console.log(result);
+  } catch (error) {
+    console.log(error);
+  }
+};
+consumePromise();
+
+// Pakai Promise yg sudah ada
+// 1. Fetch
+fetch("https://jsonplaceholder.typicode.com/users")
   .then((response) => response.json())
   .then((json) => console.log(json));
 
-//Mofification with async awai
-async function fetchData() {
-  try {
-    const response = await fetch(
-      "https://jsonplaceholder.typicode.com/users/1"
-    );
-    const json = await response.json();
-    console.log(json);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-}
+(async () => {
+  let response = await fetch("https://jsonplaceholder.typicode.com/users");
+  let json = await response.json();
+  json.forEach(({ name }) => console.log(name));
+})();
 
-fetchData();
+// 2. Axios
+axios
+  .get("https://jsonplaceholder.typicode.com/users")
+  .then((result) => console.log(result.data));
+
+(async () => {
+  let result = await axios.get("https://jsonplaceholder.typicode.com/users");
+  result.data.forEach(({ name }) => {
+    console.log(name);
+  });
+})();
